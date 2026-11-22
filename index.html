@@ -944,7 +944,7 @@ const allQuestions = [
 "I would fake an emergency to get out of ______.",
 "The most embarrassing thing in my room is ______.",
 "My biggest guilty pleasure is ______.",
-"The worst thing to hear from someone I're dating is ______.",
+"The worst thing to hear from someone I've dating is ______.",
 "If my friends exposed my secrets, they would start with ______.",
 "My most irrational dealbreaker is ______.",
 "The worst excuse for having someone else's clothes is ______.",
@@ -1772,11 +1772,13 @@ function randomizeQuestions() {
 
 
 
+
 function displayQuestions(selectedQuestions) {
 
     const container = document.getElementById("questions");
-
     container.innerHTML = "";
+
+    const cards = [];
 
     selectedQuestions.forEach((question, index) => {
 
@@ -1787,57 +1789,75 @@ function displayQuestions(selectedQuestions) {
         number.className = "question-number";
         number.textContent = "QUESTION " + (index + 1);
 
-        // Editable question
         const text = document.createElement("textarea");
         text.className = "question-edit";
         text.value = question;
-
         text.style.width = "100%";
         text.style.minHeight = "80px";
         text.style.marginTop = "10px";
         text.style.resize = "vertical";
 
-        // Select button
-        const selectButton = document.createElement("button");
-        selectButton.textContent = "Select Question";
-
-        selectButton.style.marginTop = "10px";
-
-        selectButton.onclick = function () {
-
-            // Remove previous selection
-            document.querySelectorAll(".question-card").forEach(c => {
-                c.classList.remove("selected-question");
-            });
-
-            document.querySelectorAll(".question-card button").forEach(b => {
-                b.textContent = "Select Question";
-            });
-
-            // Highlight selected question
-            card.classList.add("selected-question");
-
-            selectButton.textContent = "✓ Selected";
-
-        };
-
         card.appendChild(number);
         card.appendChild(text);
-        card.appendChild(selectButton);
 
         container.appendChild(card);
+        cards.push({ card, text });
 
     });
 
-    // Bottom instruction
+    // Instruction
     const instruction = document.createElement("p");
-    instruction.textContent = "Feel free to edit questions, then select the question you want!";
+    instruction.textContent =
+        "Feel free to edit questions, then select the question you want!";
     instruction.style.textAlign = "center";
     instruction.style.marginTop = "25px";
     instruction.style.fontWeight = "bold";
+    instruction.style.color = "white";
 
     container.appendChild(instruction);
 
+    // Selection buttons at the bottom
+    const buttonContainer = document.createElement("div");
+    buttonContainer.style.display = "flex";
+    buttonContainer.style.justifyContent = "center";
+    buttonContainer.style.gap = "15px";
+    buttonContainer.style.marginTop = "15px";
+
+    const selectedDisplay = document.createElement("div");
+    selectedDisplay.id = "selected-question-display";
+
+    cards.forEach((item, index) => {
+
+        const button = document.createElement("button");
+        button.textContent = "Select " + (index + 1);
+
+        button.onclick = function () {
+
+            cards.forEach(c => {
+                c.card.classList.remove("selected-question");
+            });
+
+            cards[index].card.classList.add("selected-question");
+
+            selectedDisplay.innerHTML = "";
+
+            const heading = document.createElement("h3");
+            heading.textContent = "Your Selected Question";
+
+            const selectedText = document.createElement("p");
+            selectedText.textContent = item.text.value;
+
+            selectedDisplay.appendChild(heading);
+            selectedDisplay.appendChild(selectedText);
+
+        };
+
+        buttonContainer.appendChild(button);
+
+    });
+
+    container.appendChild(buttonContainer);
+    container.appendChild(selectedDisplay);
 }
 
 // =====================================
